@@ -1,0 +1,8 @@
+Credits:
+
+Back End		: Ramadhani Putra Kurniawan
+Back End Bug Fixer	: Ramadhani Putra Kurniawan
+Front End		: Audrey Sheren
+Front End Bug Fixer	: Audrey Sheren , Ramadhani Putra Kurniawan
+Figma Design		: Audrey Sheren , Dealeha Puspita , Ramadhani Putra Kurniawan, Ridwan Putra Felia, vina
+ERD Design		: Audrey Sheren , Dealeha Puspita , Ramadhani Putra Kurniawan
