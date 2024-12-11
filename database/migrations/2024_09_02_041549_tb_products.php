@@ -18,6 +18,10 @@ return new class extends Migration
             $table->integer('product_qty');
             $table->unsignedBigInteger('warehouse_id')->nullable();
             $table->unsignedBigInteger('category_id')->nullable();
+            $table->string('serial')->nullable();
+            $table->string('manufaktur')->nullable();
+            $table->date('last_inspection')->nullable();
+            $table->date('next_inspection')->nullable();
             $table->timestamps();
         });
     }
