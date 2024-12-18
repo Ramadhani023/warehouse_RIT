@@ -59,6 +59,10 @@ class productcontroller extends Controller
             'product_qty' => $request->product_qty,
             'warehouse_id' => $request->warehouse_id, // Assuming warehouse_id is also passed in the request
             'category_id' => $request->product_category, // Assuming product_category is also passed in the request
+            'serial' => $request->serial,
+            'manufaktur' => $request->manufaktur,
+            'last_inspection' => $request->last_inspection,
+            'next_inspection' => $request->next_inspection,
         ]);
 
         return redirect()->route('warehouse.inside', ['id' => $request->warehouse_id]);
@@ -72,6 +76,11 @@ class productcontroller extends Controller
         $product->product_name = $request->product_name;
         $product->product_category = $request->product_category;
         $product->product_qty = $request->product_qty;
+        $product->serial = $request->serial;
+        $product->manufaktur = $request->manufaktur;
+        $product->last_inspection = $request->last_inspection;
+        $product->next_inspection = $request->next_inspection;
+        
         $product->save();
 
         return redirect()->route('warehouse.inside', ['id' => $warehouse_id]);

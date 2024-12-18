@@ -76,7 +76,8 @@
     <section class="py-8 lg:px-16 md:px-12 px-2 relative">
 
         <!-- Modal Structure -->
-        <div id="edit-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden sm:text-xs md:text-xl">
+        <div id="edit-overlay"
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden sm:text-xs md:text-xl overflow-y-auto">
             {{-- Edit itm overlay --}}
             <div id="modal-edit"
                 class="relative flex items-center justify-center h-auto md:m-8 z-40 lg:top-14 md:top-9 top-16">
@@ -88,18 +89,41 @@
                         <div class="my-8">
                             <input type="hidden" id="product-id" name="product_id">
 
+                            <!-- Item Name -->
                             <input type="text" id="product-name" name="product_name" placeholder="Item Name"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
-                            <select type="text" id="product-category" name="product_category" placeholder="Category"
+                            <!-- Category -->
+                            <select id="product-category" name="product_category"
                                 class="mt-1 p-2 border-under w-full text-black" required>
                                 @foreach ($category as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->category_name }}</option>
                                 @endforeach
                             </select>
 
+                            <!-- Quantity -->
                             <input type="number" id="product-qty" name="product_qty" placeholder="Quantity"
-                               max="900000000" class="mt-1 p-2 border-under w-full text-black" required>
+                                max="900000000" class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- Serial -->
+                            <input type="text" id="product-serial" name="serial" placeholder="Serial"
+                                class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- manufaktur -->
+                            <input type="text" id="product-manufaktur" name="manufaktur" placeholder="manufaktur"
+                                class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- Last_Inspection -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Last
+                                Inspection</label>
+                            <input type="date" id="last_inspection" name="last_inspection"
+                                class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- Next_Inspection -->
+                            <label for="next_inspection" class="block text-sm font-medium text-gray-700 mt-4">Next
+                                Inspection</label>
+                            <input type="date" id="next_inspection" name="next_inspection"
+                                class="mt-1 p-2 border-under w-full text-black" required>
                         </div>
                         <div class="flex justify-between">
                             <button id="close-edit" type="button"
@@ -150,7 +174,7 @@
                 </div>
             </div>
         </div>{{-- End Hapus itm overlay --}}
-        
+
         <div id="editwh-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden"> {{-- Edit Warehouse overlay --}}
             <div id="modal-edit-wh"
                 class="relative flex items-center justify-center h-auto md:m-8 z-40 lg:top-14 md:top-9 top-16">
@@ -175,31 +199,58 @@
             </div>
         </div>
 
-        <div id="add-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden"> {{-- Add Item overlay --}}
+        <div id="add-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden overflow-y-auto">
+            {{-- Add Item overlay --}}
             <div id="modal-add"
                 class="relative flex items-center justify-center h-auto md:m-8 z-40 lg:top-14 md:top-9 top-16">
-                <div class="bg-white p-6 rounded-b-md shadow-lg lg:w-1/3 md:w-2/3 sm:w-2/3">
+                <div
+                    class="bg-white p-6 rounded-b-md shadow-lg lg:w-1/3 md:w-2/3 sm:w-2/3 max-h-screen overflow-y-auto">
                     <h2 class="text-xl mb-4 text-black font-semibold">ADD ITEM</h2>
                     <form action="{{ route('warehouse.addi') }}" method="POST">
                         @csrf
                         <input type="hidden" name="warehouse_id" value="{{ $warehouse->id }}">
+
                         <div class="my-8">
+                            <!-- Item Name -->
                             <input type="text" id="item-name" name="product_name" placeholder="Item Name"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
-                            <select type="text" id="category" name="product_category" placeholder="Category"
+                            <!-- Category -->
+                            <select id="category" name="product_category"
                                 class="mt-1 p-2 border-under w-full text-black" required>
                                 @foreach ($category as $cat)
                                     <option value="{{ $cat->id }}">{{ $cat->category_name }}</option>
                                 @endforeach
                             </select>
 
+                            <!-- Quantity -->
                             <input type="number" id="quantity" name="product_qty" placeholder="Quantity"
                                 max="900000000" class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- Serial -->
+                            <input type="text" id="serial" name="serial" placeholder="Serial"
+                                class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- Manufacturer -->
+                            <input type="text" id="manufacturer" name="manufacturer" placeholder="Manufacturer"
+                                class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- Last_Inspection -->
+                            <label for="last_inspection" class="block text-sm font-medium text-gray-700 mt-4">Last
+                                _Inspection</label>
+                            <input type="date" id="last_inspection" name="last_inspection"
+                                class="mt-1 p-2 border-under w-full text-black" required>
+
+                            <!-- Next_Inspection -->
+                            <label for="next_inspection" class="block text-sm font-medium text-gray-700 mt-4">Next
+                                _Inspection</label>
+                            <input type="date" id="next_inspection" name="next_inspection"
+                                class="mt-1 p-2 border-under w-full text-black" required>
                         </div>
+
                         <div class="flex justify-between">
                             <button id="close-add" type="button"
-                                class=" px-4 py-2 bg-gray-300 text-black h-auto rounded-lg font-bold">CANCEL</button>
+                                class="px-4 py-2 bg-gray-300 text-black h-auto rounded-lg font-bold">CANCEL</button>
                             <button type="submit"
                                 class="px-4 py-2 bg-gray-300 text-black rounded-lg font-bold">ADD</button>
                         </div>
@@ -207,6 +258,7 @@
                 </div>
             </div>
         </div>
+
 
         {{-- add category --}}
         <div id="addc-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden"> {{-- Add Category overlay --}}
@@ -246,6 +298,10 @@
                             NAME</th>
                         <th class="lg:text-lg md:text-md text-xs">PRODUCT CATEGORY</th>
                         <th class="lg:text-lg md:text-md text-xs">QTY</th>
+                        <th class="lg:text-lg md:text-md text-xs">SERIAL NUM</th>
+                        <th class="lg:text-lg md:text-md text-xs">MANUFACTURE</th>
+                        <th class="lg:text-lg md:text-md text-xs">LAST INSPECTION</th>
+                        <th class="lg:text-lg md:text-md text-xs">NEXT INSPECTION</th>
                         <th class="lg:text-lg md:text-md text-xs">ACTION</th>
                     </tr>
                 </thead>
@@ -257,21 +313,39 @@
                                 {{ $loop->iteration }}
                             </td>
                             <!-- Product Name with Textarea -->
-                            <td class="lg:p-4 md:p-2 p-1 py-6 lg:text-xl md:text-lg sm:text-sm whitespace-nowrap max-w-[150px]">
+                            <td
+                                class="lg:p-4 md:p-2 p-1 py-6 lg:text-xl md:text-lg sm:text-sm whitespace-nowrap max-w-[150px]">
                                 <div class="border-2 border-slate-400 rounded-lg p-1 w-full shadow-xl">
                                     <p class="h-16 overflow-y-scroll p-3">
-                                        {{$product->product_name}}
+                                        {{ $product->product_name }}
                                     </p>
                                 </div>
                             </td>
-                            
+
                             <!-- Category Name -->
-                            <td class="text-center lg:text-xl md:text-lg sm:text-sm overflow-auto whitespace-nowrap max-w-[150px]">
+                            <td
+                                class="text-center lg:text-xl md:text-lg sm:text-sm overflow-auto whitespace-nowrap max-w-[150px]">
                                 {{ $product->category->category_name }}
                             </td>
                             <!-- Quantity -->
                             <td class="text-center lg:text-xl md:text-lg sm:text-sm">
                                 {{ $product->product_qty }}
+                            </td>
+                            <!-- Serial Number -->
+                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
+                                {{ $product->serial }}
+                            </td>
+                            <!-- Manufacture -->
+                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
+                                {{ $product->manufaktur }}
+                            </td>
+                            <!-- Last_Inspection -->
+                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
+                                {{ $product->last_inspection }}
+                            </td>
+                            <!-- Next_Inspection -->
+                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
+                                {{ $product->next_inspection }}
                             </td>
                             <!-- Action Buttons -->
                             <td class="text-center justify-center gap-2 place-items-center flex py-6 p-1">
@@ -280,19 +354,23 @@
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->product_name }}"
                                     data-product-category="{{ $product->product_category }}"
-                                    data-product-qty="{{ $product->product_qty }}">
+                                    data-product-qty="{{ $product->product_qty }}"
+                                    data-product-serial="{{ $product->serial }}"
+                                    data-product-manufaktur="{{ $product->manufaktur }}"
+                                    data-product-last_inspection="{{ $product->last_inspection }}"
+                                    data-product-next_inspection="{{ $product->next_inspection }}">
                                     <i class="fa-solid fa-pencil lg:text-xl md:text-lg sm:text-sm text-xs"></i>
                                 </button>
                                 <button data-product-id="{{ $product->id }}"
-                                        class="open-delete bg-red-600 p-1 lg:rounded md:rounded sm:rounded rounded-full inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10">
+                                    class="open-delete bg-red-600 p-1 lg:rounded md:rounded sm:rounded rounded-full inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10">
                                     <i class="fa-solid fa-trash lg:text-xl md:text-lg sm:text-sm text-xs"></i>
                                 </button>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
-                
-                
+
+
             </table>
 
         </section>
@@ -301,7 +379,7 @@
 
     <script>
         // script navbar
-        
+
         document.addEventListener("DOMContentLoaded", function() {
             const toggleButton = document.querySelector("[data-collapse-toggle]");
             const menu = document.getElementById("mega-menu-full");
@@ -310,7 +388,7 @@
                 menu.classList.toggle("hidden");
             });
         });
-        
+
 
         // end script navbar
 
@@ -360,12 +438,22 @@
                     const productName = button.dataset.productName;
                     const productCategory = button.dataset.productCategory;
                     const productQty = button.dataset.productQty;
+                    const productSerial = button.dataset.productSerial || ''; // Add serial data
+                    const productManufaktur = button.dataset.productManufaktur ||
+                        ''; // Add manufacturer data
+                    const last_Inspection = button.dataset.productLast_Inspection; // Corrected name
+                    const next_Inspection = button.dataset.productNext_Inspection; // Corrected name
 
                     // Set the values for the form fields
                     document.getElementById('product-id').value = productId;
                     document.getElementById('product-name').value = productName;
                     document.getElementById('product-category').value = productCategory;
                     document.getElementById('product-qty').value = productQty;
+                    document.getElementById('product-serial').value = productSerial; // Set serial
+                    document.getElementById('product-manufaktur').value =
+                        productManufaktur; // Set manufacturer
+                    document.getElementById('last_inspection').value = last_Inspection; // Corrected
+                    document.getElementById('next_inspection').value = next_Inspection; // Corrected
 
                     // Set the action URL dynamically
                     document.getElementById('edit-product-form').action =
@@ -373,9 +461,10 @@
 
                     // Show the modal
                     editOverlay.classList.remove('hidden');
-                    
                 });
             });
+
+
 
             closeEdit.addEventListener('click', () => {
                 editOverlay.classList.add('hidden');
