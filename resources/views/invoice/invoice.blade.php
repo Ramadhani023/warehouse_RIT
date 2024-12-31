@@ -17,7 +17,7 @@
 <body>
     @include('navbar')
     <section id="sortir" class="md:p-24 sm:p-12 p-6">
-        <h1 class="font-bold text-2xl md:mt-10 mt-16 mb-4">PRODUCT</h1>
+        <h1 class="font-bold text-2xl md:mt-10 mt-16 mb-4">PRODUCTS FROM ALL WAREHOUSE(S)</h1>
         <div class="justify-between sm:flex md:gap-6 sm:gap-1">
 
             <!-- Available Stock Button -->
@@ -54,58 +54,114 @@
         <!-- Product List -->
         <section class="wrap-table mt-10 border border-gray-300 p-4 shadow-lg shadow-slate-400 rounded-xl">
             <h1 class="md:text-3xl sm:text-2xl text-xl font-bold my-4">Product List</h1>
-            <table class="table w-full rounded-md overflow-hidden">
-                <thead>
-                    <tr class="border border-gray-300 text-gray-200 bg-Mid-blue">
-                        <th class="lg:px-4 md:px-2 sm:px-1 py-4 flex-wrap lg:text-xl md:text-lg sm:text-md text-[10px] text-center">#</th>
-                        <th
-                            class="lg:px-4 md:px-2 sm:px-1 py-4 flex-wrap lg:text-xl md:text-lg sm:text-md text-[10px] text-start">
-                            WAREHOUSE</th>
-                        <th class="lg:text-xl md:text-lg sm:text-lg text-[10px]">PRODUCT NAME</th>
-                        <th class="lg:text-xl md:text-lg sm:text-lg text-[10px]">QTY</th>
-                        <th class="lg:text-xl md:text-lg sm:text-lg text-[10px]">CATEGORY</th>
-                    </tr>
-                </thead>
-                <tbody id="product-table">
-                    @if ($products->isEmpty())
-                        <tr>
-                            <td colspan="4" class="text-center py-4 text-gray-500 font-bold">
-                                No Products / Items
-                            </td>
+
+            <!-- Search Bar -->
+            <div class="mb-4">
+                <input type="text" id="search-bar" placeholder="Search..."
+                    class="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-300">
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full border-collapse border border-gray-200 rounded-md overflow-hidden">
+                    <thead>
+                        <tr class="bg-Mid-blue text-gray-200 border-b border-gray-300">
+                            <th class="px-4 py-3 text-center text-sm font-semibold border-r border-gray-300">#</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-300">Warehouse
+                                Name</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-300">Product Name
+                            </th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold border-r border-gray-300">Quantity
+                            </th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold border-r border-gray-300">Category
+                            </th>
+                            <th class="px-4 py-3 text-center text-sm font-semibold">Serial</th>
                         </tr>
-                    @else
-                        @foreach ($products as $product)
-                            <tr class="border border-gray-300"
-                                data-stock="{{ $product->product_qty > 5 ? 'available' : ($product->product_qty > 0 ? 'low' : 'out-of-stock') }}">
-                                <td class="text-center md:text-lg sm:text-lg text-xs">
-                                    {{ $loop->iteration }}
-                                </td>
-                                <td class="lg:p-4 md:p-2 sm:p-1 py-3 md:text-lg sm:text-lg text-xs">
-                                    {{ $product->warehouse ? $product->warehouse->warehouse_name : 'No Warehouse' }}
-                                </td>
-                                <td class="text-center md:text-lg sm:text-lg text-xs">{{ $product->product_name }}</td>
-                                <td class="text-center md:text-lg sm:text-lg text-xs">{{ $product->product_qty }}</td>
-                                <td class="text-center md:text-lg sm:text-lg text-xs">
-                                    {{ $product->category ? $product->category->category_name : 'No Category' }}
+                    </thead>
+                    <tbody id="product-table" class="bg-white">
+                        @if ($products->isEmpty())
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-gray-500 font-bold">
+                                    No Products / Items
                                 </td>
                             </tr>
-                        @endforeach
-                    @endif
-                </tbody>
-                
-            </table>
+                        @else
+                            @foreach ($products as $product)
+                                <tr class="hover:bg-gray-50 border-b border-gray-300 {{ $product->warehouse ? '' : 'bg-red-300 hover:bg-red-300' }}"
+                                    data-stock="{{ $product->product_qty > 5 ? 'available' : ($product->product_qty > 0 ? 'low' : 'out-of-stock') }}">
+                                    <td class="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
+                                        {{ $loop->iteration }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-300">
+                                        {{ $product->warehouse ? $product->warehouse->warehouse_name : 'No Warehouse' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-300">
+                                        {{ $product->product_name }}
+                                    </td>
+                                    <td
+                                        class="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300 {{ $product->product_qty == 0 ? 'bg-red-300 hover:bg-red-400' : ($product->product_qty <= 5 ? 'bg-yellow-300' : '') }}">
+                                        {{ $product->product_qty }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-sm text-gray-700">
+                                        {{ $product->category ? $product->category->category_name : 'No Category' }}
+                                    </td>
+                                    <td class="px-4 py-3 text-center text-sm text-gray-700">
+                                        {{ $product->category ? $product->serial : 'No Category' }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+                    </tbody>
+                </table>
+            </div>
         </section>
+
+
     </section>
 
     <script>
+        // Search bar functionality
+        document.getElementById('search-bar').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('#product-table tr');
+
+            if (query === "") {
+                // If search bar is empty, show all rows and remove the "No Products / Items" message
+                rows.forEach(row => {
+                    row.style.display = ""; // Show all rows
+                });
+                removeNoItemsMessage();
+                return;
+            }
+
+            // Filter rows based on the search query
+            let visibleRows = 0;
+            rows.forEach(row => {
+                const rowText = row.innerText.toLowerCase();
+                if (rowText.includes(query)) {
+                    row.style.display = ""; // Show matching rows
+                    visibleRows++;
+                } else {
+                    row.style.display = "none"; // Hide non-matching rows
+                }
+            });
+
+            // Show "No Products / Items" message if no rows match
+            if (visibleRows === 0) {
+                showNoItemsMessage();
+            } else {
+                removeNoItemsMessage();
+            }
+        });
+
+        // Sorting functionality
         document.querySelectorAll(".sortir").forEach(button => {
             button.addEventListener("click", function() {
                 const category = this.getAttribute("data-category");
                 const isActive = this.classList.contains("active");
-    
+
                 // Remove 'active' class from all buttons
                 document.querySelectorAll(".sortir").forEach(btn => btn.classList.remove("active"));
-    
+
                 if (isActive) {
                     // If already active, show all items and deactivate filter
                     document.querySelectorAll("#product-table tr").forEach(row => {
@@ -116,7 +172,7 @@
                     // Activate current button and filter rows
                     this.classList.add("active");
                     let visibleRows = 0;
-    
+
                     document.querySelectorAll("#product-table tr").forEach(row => {
                         if (row.getAttribute("data-stock") === category) {
                             row.style.display = ""; // Show matching rows
@@ -125,7 +181,7 @@
                             row.style.display = "none"; // Hide non-matching rows
                         }
                     });
-    
+
                     // If no rows are visible, show "No Products / Items" message
                     if (visibleRows === 0) {
                         showNoItemsMessage();
@@ -135,19 +191,25 @@
                 }
             });
         });
-    
+
+        // Show "No Products / Items" message
         function showNoItemsMessage() {
             const tableBody = document.getElementById("product-table");
-            const noItemsRow = document.createElement("tr");
-            noItemsRow.id = "no-items-message";
-            noItemsRow.innerHTML = `
-                <td colspan="4" class="text-center py-4 text-gray-500 font-bold">
-                    No Products / Items
-                </td>
-            `;
-            tableBody.appendChild(noItemsRow);
+            let noItemsMessage = document.getElementById("no-items-message");
+
+            if (!noItemsMessage) {
+                const noItemsRow = document.createElement("tr");
+                noItemsRow.id = "no-items-message";
+                noItemsRow.innerHTML = `
+                    <td colspan="6" class="text-center py-4 text-gray-500 font-bold">
+                        No Products / Items
+                    </td>
+                `;
+                tableBody.appendChild(noItemsRow);
+            }
         }
-    
+
+        // Remove "No Products / Items" message
         function removeNoItemsMessage() {
             const noItemsMessage = document.getElementById("no-items-message");
             if (noItemsMessage) {
@@ -155,7 +217,8 @@
             }
         }
     </script>
-    
+
+
 </body>
 
 </html>

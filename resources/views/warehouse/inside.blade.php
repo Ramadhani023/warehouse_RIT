@@ -288,92 +288,73 @@
 
 
         <!-- Modal Structure -->
-        <section class="wrap-table mt-20 border border-gray-300 sm:p-4 p-2 shadow-lg shadow-slate-400 rounded-xl">
-            <h1 class="lg:text-3xl md:text-2xl text-xl font-bold my-4">{{ $warehouse->warehouse_name }}</h1>
-            <table class="table w-full rounded-md overflow-hidden ">
-                <thead>
-                    <tr class="border border-gray-300 text-gray-600 bg-gray-200">
-                        <th class="lg:text-lg md:text-md text-xs">#</th>
-                        <th class="lg:px-4 md:px-2 sm:px-1 py-4 flex-wrap lg:text-lg md:text-md text-xs">PRODUCT
-                            NAME</th>
-                        <th class="lg:text-lg md:text-md text-xs">PRODUCT CATEGORY</th>
-                        <th class="lg:text-lg md:text-md text-xs">QTY</th>
-                        <th class="lg:text-lg md:text-md text-xs">SERIAL NUM</th>
-                        <th class="lg:text-lg md:text-md text-xs">MANUFACTURE</th>
-                        <th class="lg:text-lg md:text-md text-xs">LAST INSPECTION</th>
-                        <th class="lg:text-lg md:text-md text-xs">NEXT INSPECTION</th>
-                        <th class="lg:text-lg md:text-md text-xs">ACTION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($products as $product)
-                        <tr class="border border-gray-300">
-                            <!-- Numbering -->
-                            <td class="lg:p-4 md:p-2 p-1 py-6 lg:text-xl md:text-lg sm:text-sm text-center">
-                                {{ $loop->iteration }}
-                            </td>
-                            <!-- Product Name with Textarea -->
-                            <td
-                                class="lg:p-4 md:p-2 p-1 py-6 lg:text-xl md:text-lg sm:text-sm whitespace-nowrap max-w-[150px]">
-                                <div class="border-2 border-slate-400 rounded-lg p-1 w-full shadow-xl">
-                                    <p class="h-16 overflow-y-scroll p-3">
-                                        {{ $product->product_name }}
-                                    </p>
-                                </div>
-                            </td>
-
-                            <!-- Category Name -->
-                            <td
-                                class="text-center lg:text-xl md:text-lg sm:text-sm overflow-auto whitespace-nowrap max-w-[150px]">
-                                {{ $product->category->category_name }}
-                            </td>
-                            <!-- Quantity -->
-                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
-                                {{ $product->product_qty }}
-                            </td>
-                            <!-- Serial Number -->
-                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
-                                {{ $product->serial }}
-                            </td>
-                            <!-- Manufacture -->
-                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
-                                {{ $product->manufaktur }}
-                            </td>
-                            <!-- Last_Inspection -->
-                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
-                                {{ $product->last_inspection }}
-                            </td>
-                            <!-- Next_Inspection -->
-                            <td class="text-center lg:text-xl md:text-lg sm:text-sm">
-                                {{ $product->next_inspection }}
-                            </td>
-                            <!-- Action Buttons -->
-                            <td class="text-center justify-center gap-2 place-items-center flex py-6 p-1">
-                                <button
-                                    class="open-edit bg-green-600 p-1 lg:rounded md:rounded sm:rounded rounded-full inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10"
-                                    data-product-id="{{ $product->id }}"
-                                    data-product-name="{{ $product->product_name }}"
-                                    data-product-category="{{ $product->product_category }}"
-                                    data-product-qty="{{ $product->product_qty }}"
-                                    data-product-serial="{{ $product->serial }}"
-                                    data-product-manufaktur="{{ $product->manufaktur }}"
-                                    data-product-last_inspection="{{ $product->last_inspection }}"
-                                    data-product-next_inspection="{{ $product->next_inspection }}">
-                                    <i class="fa-solid fa-pencil lg:text-xl md:text-lg sm:text-sm text-xs"></i>
-                                </button>
-                                <button data-product-id="{{ $product->id }}"
-                                    class="open-delete bg-red-600 p-1 lg:rounded md:rounded sm:rounded rounded-full inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10">
-                                    <i class="fa-solid fa-trash lg:text-xl md:text-lg sm:text-sm text-xs"></i>
-                                </button>
-                            </td>
+        <section class="wrap-table mt-20 border border-gray-300 shadow-md rounded-lg">
+            <h1 class="text-2xl font-bold text-gray-800 mb-2 ml-3 mt-3">{{ $warehouse->warehouse_name }}</h1>
+            <div class="overflow-x-auto">
+                <form id="searchForm" method="GET" action="{{ route('warehouse.inside', ['id' => $warehouse->id]) }}">
+                    <div class="flex items-center mb-2 px-4">
+                        <input type="text" id="search" name="search" value="{{ request('search') }}"
+                            placeholder="Search products..."
+                            class="border border-gray-300 rounded-md px-4 py-2 w-full max-w-xs focus:ring focus:ring-blue-300 focus:outline-none">
+                        <button type="submit" class="ml-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                            Search
+                        </button>
+                    </div>
+                </form>
+        
+                <table class="min-w-full border-collapse border border-gray-200">
+                    <!-- Table Header -->
+                    <thead>
+                        <tr class="bg-gray-100 border-b border-gray-300 text-gray-700">
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">#</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Product Name</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Category</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Quantity</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Serial</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Manufacturer</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Last Inspection</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Next Inspection</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold">Actions</th>
                         </tr>
-                    @endforeach
-                </tbody>
-
-
-            </table>
-
+                    </thead>
+                    <!-- Table Body -->
+                    <tbody class="bg-white">
+                        @foreach ($products as $product)
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $loop->iteration }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->product_name }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->category->category_name }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 text-center border-r border-gray-200">{{ $product->product_qty }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->serial }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->manufaktur }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->last_inspection }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->next_inspection }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 flex space-x-2">
+                                    <button
+                                        class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 open-edit"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->product_name }}"
+                                        data-product-category="{{ $product->category->id }}"
+                                        data-product-qty="{{ $product->product_qty }}"
+                                        data-product-serial="{{ $product->serial }}"
+                                        data-product-manufaktur="{{ $product->manufaktur }}"
+                                        data-product-last_inspection="{{ $product->last_inspection }}"
+                                        data-product-next_inspection="{{ $product->next_inspection }}">
+                                        Edit
+                                    </button>
+                                    <button
+                                        class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 open-delete"
+                                        data-product-id="{{ $product->id }}">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </section>
+        
     </section>
 
 
@@ -441,8 +422,8 @@
                     const productSerial = button.dataset.productSerial || ''; // Add serial data
                     const productManufaktur = button.dataset.productManufaktur ||
                         ''; // Add manufacturer data
-                    const last_Inspection = button.dataset.productLast_Inspection; // Corrected name
-                    const next_Inspection = button.dataset.productNext_Inspection; // Corrected name
+                    const last_Inspection = button.getAttribute('data-product-last_inspection');
+                    const next_Inspection = button.getAttribute('data-product-next_inspection');
 
                     // Set the values for the form fields
                     document.getElementById('product-id').value = productId;
@@ -450,8 +431,7 @@
                     document.getElementById('product-category').value = productCategory;
                     document.getElementById('product-qty').value = productQty;
                     document.getElementById('product-serial').value = productSerial; // Set serial
-                    document.getElementById('product-manufaktur').value =
-                        productManufaktur; // Set manufacturer
+                    document.getElementById('product-manufaktur').value = productManufaktur; // Set manufacturer
                     document.getElementById('last_inspection').value = last_Inspection; // Corrected
                     document.getElementById('next_inspection').value = next_Inspection; // Corrected
 
@@ -463,8 +443,6 @@
                     editOverlay.classList.remove('hidden');
                 });
             });
-
-
 
             closeEdit.addEventListener('click', () => {
                 editOverlay.classList.add('hidden');

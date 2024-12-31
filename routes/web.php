@@ -39,8 +39,8 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     // Warehouse management routes
     Route::resource('warehouses', WarehouseController::class);
 });
-
-// Main warehouse page
+ 
+// Main warehouse page  
 Route::get('/warehouse', [warehousecontroller::class, 'main'])->name('warehouse.main');
 
 Route::get('warehouse/contentWh', [WarehouseController::class, 'cw'])->name('warehouse.contentWh');
@@ -57,7 +57,6 @@ Route::get('/profile', [profilecontroller::class, 'show2'])->name('profile.main'
 Route::get('/profile', [ProfileController::class, 'show2'])->name('profile.main');
 Route::put('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
 Route::delete('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.delete');
-
 
 // Update a specific warehouse
 Route::put('/warehouse/{id}', [WarehouseController::class, 'update'])->name('warehouse.update');
