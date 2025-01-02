@@ -86,19 +86,20 @@
                             </tr>
                         @else
                             @foreach ($products as $product)
-                                <tr class="hover:bg-gray-50 border-b border-gray-300 {{ $product->warehouse ? '' : 'bg-red-300 hover:bg-red-300' }}"
+                                <tr class=" border-b border-gray-300"
                                     data-stock="{{ $product->product_qty > 5 ? 'available' : ($product->product_qty > 0 ? 'low' : 'out-of-stock') }}">
                                     <td class="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300">
                                         {{ $loop->iteration }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-300">
+                                    <td
+                                        class="px-4 py-3 text-sm text-gray-700 border-r border-gray-300 {{ $product->warehouse ? '' : 'bg-red-300 ' }}">
                                         {{ $product->warehouse ? $product->warehouse->warehouse_name : 'No Warehouse' }}
                                     </td>
                                     <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-300">
                                         {{ $product->product_name }}
                                     </td>
                                     <td
-                                        class="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300 {{ $product->product_qty == 0 ? 'bg-red-300 hover:bg-red-400' : ($product->product_qty <= 5 ? 'bg-yellow-300' : '') }}">
+                                        class="px-4 py-3 text-center text-sm text-gray-700 border-r border-gray-300 {{ $product->product_qty == 0 ? 'bg-red-300' : ($product->product_qty <= 5 ? 'bg-yellow-300' : ($product->product_qty > 5 ? 'bg-green-300' : '')) }}">
                                         {{ $product->product_qty }}
                                     </td>
                                     <td class="px-4 py-3 text-center text-sm text-gray-700">
@@ -121,60 +122,23 @@
     <script>
         // Search bar functionality
         document.getElementById('search-bar').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const rows = document.querySelectorAll('#product-table tr');
+                    const query = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('#product-table tr');
 
-            if (query === "") {
-                // If search bar is empty, show all rows and remove the "No Products / Items" message
-                rows.forEach(row => {
-                    row.style.display = ""; // Show all rows
-                });
-                removeNoItemsMessage();
-                return;
-            }
+                    if (query === "") {
+                        // If search bar is empty, show all rows and remove the "No Products / Items" message
+                        rows.forEach(row => {
+                            row.style.display = ""; // Show all rows
+                        });
+                        removeNoItemsMessage();
+                        return;
+                    }
 
-            // Filter rows based on the search query
-            let visibleRows = 0;
-            rows.forEach(row => {
-                const rowText = row.innerText.toLowerCase();
-                if (rowText.includes(query)) {
-                    row.style.display = ""; // Show matching rows
-                    visibleRows++;
-                } else {
-                    row.style.display = "none"; // Hide non-matching rows
-                }
-            });
-
-            // Show "No Products / Items" message if no rows match
-            if (visibleRows === 0) {
-                showNoItemsMessage();
-            } else {
-                removeNoItemsMessage();
-            }
-        });
-
-        // Sorting functionality
-        document.querySelectorAll(".sortir").forEach(button => {
-            button.addEventListener("click", function() {
-                const category = this.getAttribute("data-category");
-                const isActive = this.classList.contains("active");
-
-                // Remove 'active' class from all buttons
-                document.querySelectorAll(".sortir").forEach(btn => btn.classList.remove("active"));
-
-                if (isActive) {
-                    // If already active, show all items and deactivate filter
-                    document.querySelectorAll("#product-table tr").forEach(row => {
-                        row.style.display = ""; // Show all rows
-                    });
-                    removeNoItemsMessage(); // Remove "No Products / Items" message
-                } else {
-                    // Activate current button and filter rows
-                    this.classList.add("active");
+                    // Filter rows based on the search query
                     let visibleRows = 0;
-
-                    document.querySelectorAll("#product-table tr").forEach(row => {
-                        if (row.getAttribute("data-stock") === category) {
+                    rows.forEach(row => {
+                        const rowText = row.innerText.toLowerCase();
+                        if (rowText.includes(query)) {
                             row.style.display = ""; // Show matching rows
                             visibleRows++;
                         } else {
@@ -182,40 +146,77 @@
                         }
                     });
 
-                    // If no rows are visible, show "No Products / Items" message
+                    // Show "No Products / Items" message if no rows match
                     if (visibleRows === 0) {
                         showNoItemsMessage();
                     } else {
                         removeNoItemsMessage();
                     }
-                }
-            });
-        });
+                });
 
-        // Show "No Products / Items" message
-        function showNoItemsMessage() {
-            const tableBody = document.getElementById("product-table");
-            let noItemsMessage = document.getElementById("no-items-message");
+                // Sorting functionality
+                document.querySelectorAll(".sortir").forEach(button => {
+                    button.addEventListener("click", function() {
+                        const category = this.getAttribute("data-category");
+                        const isActive = this.classList.contains("active");
 
-            if (!noItemsMessage) {
-                const noItemsRow = document.createElement("tr");
-                noItemsRow.id = "no-items-message";
-                noItemsRow.innerHTML = `
+                        // Remove 'active' class from all buttons
+                        document.querySelectorAll(".sortir").forEach(btn => btn.classList.remove("active"));
+
+                        if (isActive) {
+                            // If already active, show all items and deactivate filter
+                            document.querySelectorAll("#product-table tr").forEach(row => {
+                                row.style.display = ""; // Show all rows
+                            });
+                            removeNoItemsMessage(); // Remove "No Products / Items" message
+                        } else {
+                            // Activate current button and filter rows
+                            this.classList.add("active");
+                            let visibleRows = 0;
+
+                            document.querySelectorAll("#product-table tr").forEach(row => {
+                                if (row.getAttribute("data-stock") === category) {
+                                    row.style.display = ""; // Show matching rows
+                                    visibleRows++;
+                                } else {
+                                    row.style.display = "none"; // Hide non-matching rows
+                                }
+                            });
+
+                            // If no rows are visible, show "No Products / Items" message
+                            if (visibleRows === 0) {
+                                showNoItemsMessage();
+                            } else {
+                                removeNoItemsMessage();
+                            }
+                        }
+                    });
+                });
+
+                // Show "No Products / Items" message
+                function showNoItemsMessage() {
+                    const tableBody = document.getElementById("product-table");
+                    let noItemsMessage = document.getElementById("no-items-message");
+
+                    if (!noItemsMessage) {
+                        const noItemsRow = document.createElement("tr");
+                        noItemsRow.id = "no-items-message";
+                        noItemsRow.innerHTML = `
                     <td colspan="6" class="text-center py-4 text-gray-500 font-bold">
                         No Products / Items
                     </td>
                 `;
-                tableBody.appendChild(noItemsRow);
-            }
-        }
+                        tableBody.appendChild(noItemsRow);
+                    }
+                }
 
-        // Remove "No Products / Items" message
-        function removeNoItemsMessage() {
-            const noItemsMessage = document.getElementById("no-items-message");
-            if (noItemsMessage) {
-                noItemsMessage.remove();
-            }
-        }
+                // Remove "No Products / Items" message
+                function removeNoItemsMessage() {
+                    const noItemsMessage = document.getElementById("no-items-message");
+                    if (noItemsMessage) {
+                        noItemsMessage.remove();
+                    }
+                }
     </script>
 
 

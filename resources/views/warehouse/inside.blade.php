@@ -90,10 +90,12 @@
                             <input type="hidden" id="product-id" name="product_id">
 
                             <!-- Item Name -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Item Name</label>
                             <input type="text" id="product-name" name="product_name" placeholder="Item Name"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- Category -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Category</label>
                             <select id="product-category" name="product_category"
                                 class="mt-1 p-2 border-under w-full text-black" required>
                                 @foreach ($category as $cat)
@@ -102,14 +104,18 @@
                             </select>
 
                             <!-- Quantity -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Quantity</label>
                             <input type="number" id="product-qty" name="product_qty" placeholder="Quantity"
                                 max="900000000" class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- Serial -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Serial</label>
                             <input type="text" id="product-serial" name="serial" placeholder="Serial"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- manufaktur -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Last
+                                Inspection</label>
                             <input type="text" id="product-manufaktur" name="manufaktur" placeholder="manufaktur"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
@@ -286,23 +292,63 @@
             </div>
         </div>
 
+        <div id="borrow-overlay"
+            class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden sm:text-xs md:text-xl overflow-y-auto">
+            {{-- Borrow item overlay --}}
+            <div id="modal-borrow"
+                class="relative flex items-center justify-center h-auto md:m-8 z-40 lg:top-14 md:top-9 top-16">
+                <div class="bg-white p-6 rounded-lg shadow-lg lg:w-1/3 md:w-2/3 sm:w-2/3">
+                    <h2 class="md:text-2xl sm:text-xl mb-4 text-black font-semibold">BORROW ITEM</h2>
+                    <form id="borrow-product-form" action="#" method="POST">
+                        @csrf
+                        <div class="my-8">
+                            <!-- Borrower Name -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Name</label>
+                            <input type="text" id="borrower-name" name="borrower_name" placeholder="Your Name"
+                            value="{{ Auth::user()->name }}"
+                                class="mt-1 p-2 border-under w-full text-black"
+                                readonly required>
+
+                            <!-- Item Name -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Item Name</label>
+                            <input type="text" id="borrow-item-name" name="borrow_item_name"
+                                class="mt-1 p-2 border-under w-full text-black"
+                                readonly required>
+
+                            <!-- Quantity -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">QTY</label>
+                            <input type="number" id="borrow-qty" name="borrow_qty" placeholder="Quantity"
+                                max="900000000"
+                                class="mt-1 p-2 border-under w-full text-black"
+                                required>
+
+                            <!-- Serial -->
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Serial</label>
+                            <input type="text" id="borrow-serial" name="borrow_serial" placeholder="Item Serial"
+                                class="mt-1 p-2 border-under w-full text-black"
+                                required>
+                        </div>
+                        <div class="flex justify-between mt-6">
+                            <button id="close-borrow" type="button"
+                                class="px-6 py-3 bg-gray-300 text-black rounded-lg font-semibold hover:bg-gray-400 transition">CANCEL</button>
+                            <button type="submit"
+                                class="px-6 py-3 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition">BORROW</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div> {{-- End Borrow item overlay --}}
 
         <!-- Modal Structure -->
         <section class="wrap-table mt-20 border border-gray-300 shadow-md rounded-lg">
             <h1 class="text-2xl font-bold text-gray-800 mb-2 ml-3 mt-3">{{ $warehouse->warehouse_name }}</h1>
             <div class="overflow-x-auto">
-                <form id="searchForm" method="GET" action="{{ route('warehouse.inside', ['id' => $warehouse->id]) }}">
-                    <div class="flex items-center mb-2 px-4">
-                        <input type="text" id="search" name="search" value="{{ request('search') }}"
-                            placeholder="Search products..."
-                            class="border border-gray-300 rounded-md px-4 py-2 w-full max-w-xs focus:ring focus:ring-blue-300 focus:outline-none">
-                        <button type="submit" class="ml-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            Search
-                        </button>
-                    </div>
-                </form>
+                <div class="mb-4 mx-3">
+                    <input type="text" id="search-bar" placeholder="Search..."
+                        class="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-300">
+                </div>
         
-                <table class="min-w-full border-collapse border border-gray-200">
+                <table class="min-w-full border-collapse border border-gray-200" id="product-table">
                     <!-- Table Header -->
                     <thead>
                         <tr class="bg-gray-100 border-b border-gray-300 text-gray-700">
@@ -330,37 +376,23 @@
                                 <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->last_inspection }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->next_inspection }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 flex space-x-2">
-                                    <button
-                                        class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600 open-edit"
-                                        data-product-id="{{ $product->id }}"
-                                        data-product-name="{{ $product->product_name }}"
-                                        data-product-category="{{ $product->category->id }}"
-                                        data-product-qty="{{ $product->product_qty }}"
-                                        data-product-serial="{{ $product->serial }}"
-                                        data-product-manufaktur="{{ $product->manufaktur }}"
-                                        data-product-last_inspection="{{ $product->last_inspection }}"
-                                        data-product-next_inspection="{{ $product->next_inspection }}">
-                                        Edit
-                                    </button>
-                                    <button
-                                        class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600 open-delete"
-                                        data-product-id="{{ $product->id }}">
-                                        Delete
-                                    </button>
+                                    <button class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Edit</button>
+                                    <button class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Delete</button>
+                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600">Borrow</button>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+                <div id="no-items-message" class="hidden text-center text-gray-600 mt-4">No products/items match your search.</div>
             </div>
         </section>
-        
+
     </section>
 
 
     <script>
         // script navbar
-
         document.addEventListener("DOMContentLoaded", function() {
             const toggleButton = document.querySelector("[data-collapse-toggle]");
             const menu = document.getElementById("mega-menu-full");
@@ -369,8 +401,6 @@
                 menu.classList.toggle("hidden");
             });
         });
-
-
         // end script navbar
 
         // script modal
@@ -382,35 +412,40 @@
                 }
             }
 
-            // Modal untuk EDIT ITEM
+            // Modal for EDIT ITEM
             const openEdit = document.querySelectorAll('.open-edit');
             const closeEdit = document.getElementById('close-edit');
             const editOverlay = document.getElementById('edit-overlay');
 
-            // Modal untuk DELETE ITEM
+            // Modal for DELETE ITEM
             const openDelete = document.querySelectorAll('.open-delete');
             const closeDelete = document.getElementById('close-delete');
             const deleteOverlay = document.getElementById('delete-overlay');
 
-            // Modal untuk DELETE WAREHOUSE
+            // Modal for DELETE WAREHOUSE
             const openDeleteWh = document.getElementById('open-deletewh');
             const closeDeleteWh = document.getElementById('close-deletewh');
             const deleteWhOverlay = document.getElementById('deletewh-overlay');
 
-            // Modal untuk EDIT WAREHOUSE
+            // Modal for EDIT WAREHOUSE
             const openEditWh = document.getElementById('open-editwh');
             const closeEditWh = document.getElementById('close-editwh');
             const editWhOverlay = document.getElementById('editwh-overlay');
 
-            // Modal untuk ADD ITEM
+            // Modal for ADD ITEM
             const openAdd = document.getElementById('open-add');
             const closeAdd = document.getElementById('close-add');
             const addOverlay = document.getElementById('add-overlay');
 
-            // Modal untuk ADD CATEGORY
+            // Modal for ADD CATEGORY
             const openAddc = document.getElementById('open-addc');
             const closeAddc = document.getElementById('close-addc');
             const addcOverlay = document.getElementById('addc-overlay');
+
+            // Modal for BORROW ITEM (Updated)
+            const openBorrow = document.getElementById('open-borrow');
+            const closeBorrow = document.getElementById('close-borrow');
+            const borrowOverlay = document.getElementById('borrow-overlay');
 
             // Edit Item Modal
             openEdit.forEach(button => {
@@ -431,7 +466,8 @@
                     document.getElementById('product-category').value = productCategory;
                     document.getElementById('product-qty').value = productQty;
                     document.getElementById('product-serial').value = productSerial; // Set serial
-                    document.getElementById('product-manufaktur').value = productManufaktur; // Set manufacturer
+                    document.getElementById('product-manufaktur').value =
+                        productManufaktur; // Set manufacturer
                     document.getElementById('last_inspection').value = last_Inspection; // Corrected
                     document.getElementById('next_inspection').value = next_Inspection; // Corrected
 
@@ -466,7 +502,6 @@
                     deleteForm.action =
                         `/warehouse/product/delete/${productId}`; // Update action with product ID
 
-
                     deleteOverlay.classList.remove('hidden'); // Show delete modal
                 });
             });
@@ -480,7 +515,6 @@
                     deleteOverlay.classList.add('hidden');
                 }
             });
-
 
             // Delete Warehouse Modal
             openDeleteWh.addEventListener('click', () => {
@@ -545,9 +579,54 @@
                     addcOverlay.classList.add('hidden');
                 }
             });
+
+            // Borrow Item Modal (Updated)
+            openBorrow.addEventListener('click', () => {
+                const itemName = openBorrow.dataset
+                .itemName; // Dynamically get the item name from the button
+                document.getElementById('borrow-item-name').value =
+                itemName; // Fill the item name in the form
+                borrowOverlay.classList.remove('hidden');
+                hideNavbarOnModalOpen();
+            });
+
+            closeBorrow.addEventListener('click', () => {
+                borrowOverlay.classList.add('hidden');
+            });
+
+            window.addEventListener('click', (e) => {
+                if (e.target === borrowOverlay) {
+                    borrowOverlay.classList.add('hidden');
+                }
+            });
         });
+
+        document.getElementById('search-bar').addEventListener('input', function () {
+        const query = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#product-table tbody tr');
+        let visibleRows = 0;
+
+        rows.forEach(row => {
+            const rowText = row.innerText.toLowerCase();
+            if (rowText.includes(query)) {
+                row.style.display = '';
+                visibleRows++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const noItemsMessage = document.getElementById('no-items-message');
+        if (visibleRows === 0) {
+            noItemsMessage.classList.remove('hidden');
+        } else {
+            noItemsMessage.classList.add('hidden');
+        }
+    });
         // end script 
     </script>
+
+
 
 </body>
 
