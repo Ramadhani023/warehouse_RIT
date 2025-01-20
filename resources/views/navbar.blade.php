@@ -38,6 +38,10 @@
                             <a href="{{ route('admin.users.index') }}"
                                 class="block py-2 px-3 text-white rounded hover:text-slate-300 md:p-4">USERS</a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.borrow.index') }}"
+                                class="block py-2 px-3 text-white rounded hover:text-slate-300 md:p-4">BOINDEX</a>
+                        </li>
                     @endif
                     <li>
                         <a href="{{ route('warehouse.main') }}"

@@ -5,6 +5,7 @@ use App\Http\Controllers\categorycontroller;
 use App\Http\Controllers\productcontroller;
 use App\Http\Controllers\profilecontroller;
 use App\Http\Controllers\warehousecontroller;
+use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,10 +37,18 @@ Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
     Route::put('/users/{id}', [AdminUserController::class, 'update'])->name('admin.users.update');
     Route::delete('/users/{id}', [AdminUserController::class, 'destroy'])->name('admin.users.destroy');
 
+    // Borrowed Item management routes
+    Route::get('/admin/borrow', [AdminUserController::class, 'borrowIndex'])->name('admin.borrow.index');
+    Route::post('/admin/borrow/return/{id}', [AdminUserController::class, 'returnItem'])->name('admin.borrow.return');
+    Route::delete('/admin/borrow/{id}', [AdminUserController::class, 'destroyBorrow'])->name('admin.borrow.destroy');
+
     // Warehouse management routes
     Route::resource('warehouses', WarehouseController::class);
 });
- 
+
+// Borrow an item (POST)
+Route::post('/warehouse/borrow', [productcontroller::class, 'borrow'])->name('warehouse.borrow');
+
 // Main warehouse page  
 Route::get('/warehouse', [warehousecontroller::class, 'main'])->name('warehouse.main');
 

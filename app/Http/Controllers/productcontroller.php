@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Borrowmodel;
 use Illuminate\Http\Request;
 use App\Models\productmodel;
 use App\Models\categorymodel;
@@ -110,4 +111,37 @@ class productcontroller extends Controller
         // Pass the data to the view
         return view('invoice.invoice', compact('products', 'availableStockCount', 'lowStockCount', 'outOfStockCount'));
     }
+
+    public function borrow(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|integer',
+            'borrower_name' => 'required|string|max:255',
+            'borrow_item_name' => 'required|string|max:255',
+            'borrow_qty' => 'required|integer|min:1',
+        ]);
+    
+        try {
+            $product = productmodel::findOrFail($request->input('product_id'));
+    
+            if ($product->product_qty < $request->input('borrow_qty')) {
+                return redirect()->back()->with('error', 'Insufficient stock to borrow.');
+            }
+    
+            $product->product_qty -= $request->input('borrow_qty');
+            $product->save();
+    
+            Borrowmodel::create([
+                'item_name' => $request->input('borrow_item_name'),
+                'qty' => $request->input('borrow_qty'),
+                'borrower' => $request->input('borrower_name'),
+                'status' => 'not returned',
+            ]);
+    
+            return redirect()->route('warehouse.inside', ['id' => $product->warehouse_id])->with('success', 'Product borrowed successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Something went wrong.');
+        }
+    }
+    
 }

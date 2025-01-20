@@ -14,12 +14,16 @@
             display: inline-block;
             border-bottom: 1px solid black;
         }
+
+        .bg-Mid-blue-light {
+            background-color: #265665;
+        }
     </style>
 </head>
 
 <body>
-    <nav class="bg-Mid-blue fixed w-full z-50 " style="top: 0;">
-        <div class=" flex flex-wrap justify-between items-center mx-auto p-4 ">
+    <nav class="bg-Mid-blue fixed w-full z-50" style="top: 0;">
+        <div class="flex flex-wrap justify-between items-center mx-auto p-4">
             <h1 class="lg:text-4xl md:text-2xl sm:text-xl text-white">Warehouse</h1>
 
             <button data-collapse-toggle="mega-menu-full" type="button"
@@ -32,24 +36,35 @@
                         d="M1 1h15M1 7h15M1 13h15" />
                 </svg>
             </button>
+
             {{-- Navbar menu --}}
             <div id="mega-menu-full" class="hidden w-full md:hidden lg:block lg:w-auto sm:text-xs md:text-lg">
                 <ul class="lg:flex lg:flex-row md:p-0 rounded-lg bg-transparent md:space-x-8 md:grid  md:border-0">
+                    @if (Auth::user()->role === 'admin')
+                        <li>
+                            <a href="{{ route('admin.users.index') }}"
+                                class="block py-2 px-4 text-white rounded hover:text-slate-300 bg-Mid-blue-light md:p-4">USERS</a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.borrow.index') }}"
+                                class="block py-2 px-4 text-white rounded hover:text-slate-300 bg-Mid-blue-light md:p-4">BOINDEX</a>
+                        </li>
+                    @endif
                     <li>
                         <a href="{{ route('warehouse.main') }}"
-                            class="block py-2 px-3 text-white rounded hover:text-slate-300 md:p-4 md:ps-12">WAREHOUSE</a>
+                            class="block py-2 px-4 text-white rounded hover:text-slate-300 bg-Mid-blue-light md:p-4">WAREHOUSE</a>
                     </li>
                     <li>
                         <a href="../../invoice/invoice"
-                            class="block py-2 px-3 text-white rounded hover:text-slate-300 md:p-4">INVOICE</a>
+                            class="block py-2 px-4 text-white rounded hover:text-slate-300 bg-Mid-blue-light md:p-4">INVOICE</a>
                     </li>
                     <li>
                         <a href="/profile"
-                            class="block py-2 px-3 text-white rounded hover:text-slate-300 md:p-4">PROFILE</a>
+                            class="block py-2 px-4 text-white rounded hover:text-slate-300 bg-Mid-blue-light md:p-4">PROFILE</a>
                     </li>
                     <!-- Dropdown Trigger -->
                     <li class="relative group mt-2">
-                        <button class=" text-white focus:outline-none block py-2 px-3">
+                        <button class="text-white focus:outline-none block py-2 px-4 bg-Mid-blue-light rounded">
                             OPERATIONS
                             <i class="fa-solid fa-chevron-down"></i>
                         </button>
@@ -90,12 +105,14 @@
                             <input type="hidden" id="product-id" name="product_id">
 
                             <!-- Item Name -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Item Name</label>
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Item
+                                Name</label>
                             <input type="text" id="product-name" name="product_name" placeholder="Item Name"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- Category -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Category</label>
+                            <label for="last inspection"
+                                class="block text-sm font-medium text-gray-700 mt-4">Category</label>
                             <select id="product-category" name="product_category"
                                 class="mt-1 p-2 border-under w-full text-black" required>
                                 @foreach ($category as $cat)
@@ -104,18 +121,20 @@
                             </select>
 
                             <!-- Quantity -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Quantity</label>
+                            <label for="last inspection"
+                                class="block text-sm font-medium text-gray-700 mt-4">Quantity</label>
                             <input type="number" id="product-qty" name="product_qty" placeholder="Quantity"
                                 max="900000000" class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- Serial -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Serial</label>
+                            <label for="last inspection"
+                                class="block text-sm font-medium text-gray-700 mt-4">Serial</label>
                             <input type="text" id="product-serial" name="serial" placeholder="Serial"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- manufaktur -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Last
-                                Inspection</label>
+                            <label for="last inspection"
+                                class="block text-sm font-medium text-gray-700 mt-4">Manufacture</label>
                             <input type="text" id="product-manufaktur" name="manufaktur" placeholder="manufaktur"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
@@ -265,7 +284,6 @@
             </div>
         </div>
 
-
         {{-- add category --}}
         <div id="addc-overlay" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 hidden"> {{-- Add Category overlay --}}
             <div id="modal-addc"
@@ -299,34 +317,29 @@
                 class="relative flex items-center justify-center h-auto md:m-8 z-40 lg:top-14 md:top-9 top-16">
                 <div class="bg-white p-6 rounded-lg shadow-lg lg:w-1/3 md:w-2/3 sm:w-2/3">
                     <h2 class="md:text-2xl sm:text-xl mb-4 text-black font-semibold">BORROW ITEM</h2>
-                    <form id="borrow-product-form" action="#" method="POST">
+                    <form id="borrow-product-form" action="{{ route('warehouse.borrow') }}" method="POST">
                         @csrf
+                        <input type="hidden" id="product-id2" name="product_id">
                         <div class="my-8">
                             <!-- Borrower Name -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Name</label>
+                            <label for="last inspection"
+                                class="block text-sm font-medium text-gray-700 mt-4">Name</label>
                             <input type="text" id="borrower-name" name="borrower_name" placeholder="Your Name"
-                            value="{{ Auth::user()->name }}"
-                                class="mt-1 p-2 border-under w-full text-black"
+                                value="{{ Auth::user()->name }}" class="mt-1 p-2 border-under w-full text-black"
                                 readonly required>
 
                             <!-- Item Name -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Item Name</label>
+                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Item
+                                Name</label>
                             <input type="text" id="borrow-item-name" name="borrow_item_name"
-                                class="mt-1 p-2 border-under w-full text-black"
-                                readonly required>
+                                class="mt-1 p-2 border-under w-full text-black" readonly required>
 
                             <!-- Quantity -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">QTY</label>
+                            <label for="last inspection"
+                                class="block text-sm font-medium text-gray-700 mt-4">QTY</label>
                             <input type="number" id="borrow-qty" name="borrow_qty" placeholder="Quantity"
-                                max="900000000"
-                                class="mt-1 p-2 border-under w-full text-black"
-                                required>
+                                max="900000000" class="mt-1 p-2 border-under w-full text-black" required>
 
-                            <!-- Serial -->
-                            <label for="last inspection" class="block text-sm font-medium text-gray-700 mt-4">Serial</label>
-                            <input type="text" id="borrow-serial" name="borrow_serial" placeholder="Item Serial"
-                                class="mt-1 p-2 border-under w-full text-black"
-                                required>
                         </div>
                         <div class="flex justify-between mt-6">
                             <button id="close-borrow" type="button"
@@ -347,19 +360,25 @@
                     <input type="text" id="search-bar" placeholder="Search..."
                         class="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-300">
                 </div>
-        
+
                 <table class="min-w-full border-collapse border border-gray-200" id="product-table">
                     <!-- Table Header -->
                     <thead>
                         <tr class="bg-gray-100 border-b border-gray-300 text-gray-700">
                             <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">#</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Product Name</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Category</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Quantity</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Product Name
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Category
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Quantity
+                            </th>
                             <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Serial</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Manufacturer</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Last Inspection</th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Next Inspection</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Manufacturer
+                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Last
+                                Inspection</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Next
+                                Inspection</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold">Actions</th>
                         </tr>
                     </thead>
@@ -367,24 +386,53 @@
                     <tbody class="bg-white">
                         @foreach ($products as $product)
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $loop->iteration }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->product_name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->category->category_name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 text-center border-r border-gray-200">{{ $product->product_qty }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->serial }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->manufaktur }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->last_inspection }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">{{ $product->next_inspection }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
+                                    {{ $loop->iteration }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
+                                    {{ $product->product_name }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
+                                    {{ $product->category->category_name }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 text-center border-r border-gray-200">
+                                    {{ $product->product_qty }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
+                                    {{ $product->serial }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
+                                    {{ $product->manufaktur }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
+                                    {{ $product->last_inspection }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
+                                    {{ $product->next_inspection }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 flex space-x-2">
-                                    <button class="bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600">Edit</button>
-                                    <button class="bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600">Delete</button>
-                                    <button class="bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600">Borrow</button>
+                                    <button
+                                        class="open-edit bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->product_name }}"
+                                        data-product-category="{{ $product->category->id }}"
+                                        data-product-qty="{{ $product->product_qty }}"
+                                        data-product-serial="{{ $product->serial }}"
+                                        data-product-manufaktur="{{ $product->manufaktur }}"
+                                        data-product-last-inspection="{{ $product->last_inspection }}"
+                                        data-product-next-inspection="{{ $product->next_inspection }}">
+                                        Edit
+                                    </button>
+                                    <button
+                                        class="open-delete bg-red-500 text-white px-2 py-1 rounded text-xs hover:bg-red-600"
+                                        data-product-id="{{ $product->id }}">
+                                        Delete
+                                    </button>
+                                    <button
+                                        class="open-borrow bg-blue-500 text-white px-2 py-1 rounded text-xs hover:bg-blue-600"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->product_name }}">
+                                        Borrow
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <div id="no-items-message" class="hidden text-center text-gray-600 mt-4">No products/items match your search.</div>
+                <div id="no-items-message" class="hidden text-center text-gray-600 mt-4 mb-4">No products/items match
+                    your search.</div>
             </div>
         </section>
 
@@ -392,7 +440,7 @@
 
 
     <script>
-        // script navbar
+        // Script: Navbar
         document.addEventListener("DOMContentLoaded", function() {
             const toggleButton = document.querySelector("[data-collapse-toggle]");
             const menu = document.getElementById("mega-menu-full");
@@ -401,10 +449,10 @@
                 menu.classList.toggle("hidden");
             });
         });
-        // end script navbar
+        // End Navbar Script
 
-        // script modal
-        document.addEventListener('DOMContentLoaded', () => {
+        // Script: Modal
+        document.addEventListener("DOMContentLoaded", () => {
             function hideNavbarOnModalOpen() {
                 const menu = document.getElementById("mega-menu-full");
                 if (!menu.classList.contains("hidden")) {
@@ -412,218 +460,154 @@
                 }
             }
 
-            // Modal for EDIT ITEM
-            const openEdit = document.querySelectorAll('.open-edit');
-            const closeEdit = document.getElementById('close-edit');
-            const editOverlay = document.getElementById('edit-overlay');
+            // Generic modal functions
+            function setupModal(openButtons, closeButton, overlay) {
+                if (openButtons) {
+                    openButtons.forEach(button => {
+                        button.addEventListener("click", () => overlay.classList.remove("hidden"));
+                    });
+                }
 
-            // Modal for DELETE ITEM
-            const openDelete = document.querySelectorAll('.open-delete');
-            const closeDelete = document.getElementById('close-delete');
-            const deleteOverlay = document.getElementById('delete-overlay');
+                if (closeButton) {
+                    closeButton.addEventListener("click", () => overlay.classList.add("hidden"));
+                }
 
-            // Modal for DELETE WAREHOUSE
-            const openDeleteWh = document.getElementById('open-deletewh');
-            const closeDeleteWh = document.getElementById('close-deletewh');
-            const deleteWhOverlay = document.getElementById('deletewh-overlay');
-
-            // Modal for EDIT WAREHOUSE
-            const openEditWh = document.getElementById('open-editwh');
-            const closeEditWh = document.getElementById('close-editwh');
-            const editWhOverlay = document.getElementById('editwh-overlay');
-
-            // Modal for ADD ITEM
-            const openAdd = document.getElementById('open-add');
-            const closeAdd = document.getElementById('close-add');
-            const addOverlay = document.getElementById('add-overlay');
-
-            // Modal for ADD CATEGORY
-            const openAddc = document.getElementById('open-addc');
-            const closeAddc = document.getElementById('close-addc');
-            const addcOverlay = document.getElementById('addc-overlay');
-
-            // Modal for BORROW ITEM (Updated)
-            const openBorrow = document.getElementById('open-borrow');
-            const closeBorrow = document.getElementById('close-borrow');
-            const borrowOverlay = document.getElementById('borrow-overlay');
+                window.addEventListener("click", (e) => {
+                    if (e.target === overlay) overlay.classList.add("hidden");
+                });
+            }
 
             // Edit Item Modal
+            const editOverlay = document.getElementById("edit-overlay");
+            const openEdit = document.querySelectorAll(".open-edit");
+            const closeEdit = document.getElementById("close-edit");
+
             openEdit.forEach(button => {
-                button.addEventListener('click', () => {
+                button.addEventListener("click", () => {
                     const productId = button.dataset.productId;
                     const productName = button.dataset.productName;
                     const productCategory = button.dataset.productCategory;
                     const productQty = button.dataset.productQty;
-                    const productSerial = button.dataset.productSerial || ''; // Add serial data
-                    const productManufaktur = button.dataset.productManufaktur ||
-                        ''; // Add manufacturer data
-                    const last_Inspection = button.getAttribute('data-product-last_inspection');
-                    const next_Inspection = button.getAttribute('data-product-next_inspection');
+                    const productSerial = button.dataset.productSerial || "";
+                    const productManufaktur = button.dataset.productManufaktur || "";
+                    const lastInspection = button.dataset.productLastInspection;
+                    const nextInspection = button.dataset.productNextInspection;
 
-                    // Set the values for the form fields
-                    document.getElementById('product-id').value = productId;
-                    document.getElementById('product-name').value = productName;
-                    document.getElementById('product-category').value = productCategory;
-                    document.getElementById('product-qty').value = productQty;
-                    document.getElementById('product-serial').value = productSerial; // Set serial
-                    document.getElementById('product-manufaktur').value =
-                        productManufaktur; // Set manufacturer
-                    document.getElementById('last_inspection').value = last_Inspection; // Corrected
-                    document.getElementById('next_inspection').value = next_Inspection; // Corrected
+                    document.getElementById("product-id").value = productId;
+                    document.getElementById("product-name").value = productName;
+                    document.getElementById("product-category").value = productCategory;
+                    document.getElementById("product-qty").value = productQty;
+                    document.getElementById("product-serial").value = productSerial;
+                    document.getElementById("product-manufaktur").value = productManufaktur;
+                    document.getElementById("last_inspection").value = lastInspection;
+                    document.getElementById("next_inspection").value = nextInspection;
 
-                    // Set the action URL dynamically
-                    document.getElementById('edit-product-form').action =
+                    document.getElementById("edit-product-form").action =
                         `/warehouse/product/edit/${productId}`;
-
-                    // Show the modal
-                    editOverlay.classList.remove('hidden');
+                    editOverlay.classList.remove("hidden");
                 });
             });
-
-            closeEdit.addEventListener('click', () => {
-                editOverlay.classList.add('hidden');
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === editOverlay) {
-                    editOverlay.classList.add('hidden');
-                }
-            });
+            setupModal(null, closeEdit, editOverlay);
 
             // Delete Item Modal
+            const deleteOverlay = document.getElementById("delete-overlay");
+            const openDelete = document.querySelectorAll(".open-delete");
+            const closeDelete = document.getElementById("close-delete");
+
             openDelete.forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.closest('button').dataset
-                        .productId; // Get product ID from table row
-
-                    // Set the action URL dynamically for the form inside the delete modal
-                    const deleteForm = document.querySelector(
-                        '#delete-form'); // Make sure your delete form has this ID
-                    deleteForm.action =
-                        `/warehouse/product/delete/${productId}`; // Update action with product ID
-
-                    deleteOverlay.classList.remove('hidden'); // Show delete modal
+                button.addEventListener("click", () => {
+                    const productId = button.dataset.productId;
+                    const deleteForm = document.querySelector("#delete-form");
+                    deleteForm.action = `/warehouse/product/delete/${productId}`;
+                    deleteOverlay.classList.remove("hidden");
                 });
             });
+            setupModal(null, closeDelete, deleteOverlay);
 
-            closeDelete.addEventListener('click', () => {
-                deleteOverlay.classList.add('hidden');
+            // Borrow Item Modal
+            const borrowOverlay = document.getElementById("borrow-overlay");
+            const openBorrowButtons = document.querySelectorAll(".open-borrow");
+            const closeBorrowButton = document.getElementById("close-borrow");
+
+            openBorrowButtons.forEach(button => {
+                button.addEventListener("click", () => {
+                    const productId = button.dataset.productId;
+                    const productName = button.dataset.productName;
+
+                    console.log("Product ID:", productId); // Log the product ID
+                    console.log("Product Name:", productName); // Log the product ID
+
+                    document.getElementById("borrow-item-name").value = productName;
+                    document.getElementById("product-id2").value =
+                        productId; // Set the product_id field
+                    borrowOverlay.classList.remove("hidden");
+                });
+            });
+            closeBorrowButton.addEventListener("click", () => {
+                borrowOverlay.classList.add("hidden");
             });
 
-            window.addEventListener('click', (e) => {
-                if (e.target === deleteOverlay) {
-                    deleteOverlay.classList.add('hidden');
+            // Additional modals (Add, Edit, Borrow, Category, Warehouse)
+            const modalConfigs = [{
+                    open: "#open-add",
+                    close: "#close-add",
+                    overlay: "#add-overlay"
+                },
+                {
+                    open: "#open-addc",
+                    close: "#close-addc",
+                    overlay: "#addc-overlay"
+                },
+                {
+                    open: "#open-borrow",
+                    close: "#close-borrow",
+                    overlay: "#borrow-overlay"
+                },
+                {
+                    open: "#open-deletewh",
+                    close: "#close-deletewh",
+                    overlay: "#deletewh-overlay"
+                },
+                {
+                    open: "#open-editwh",
+                    close: "#close-editwh",
+                    overlay: "#editwh-overlay"
                 }
-            });
+            ];
 
-            // Delete Warehouse Modal
-            openDeleteWh.addEventListener('click', () => {
-                deleteWhOverlay.classList.remove('hidden');
-                hideNavbarOnModalOpen();
-            });
+            modalConfigs.forEach(({
+                open,
+                close,
+                overlay
+            }) => {
+                const openButton = document.querySelector(open);
+                const closeButton = document.querySelector(close);
+                const modalOverlay = document.querySelector(overlay);
 
-            closeDeleteWh.addEventListener('click', () => {
-                deleteWhOverlay.classList.add('hidden');
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === deleteWhOverlay) {
-                    deleteWhOverlay.classList.add('hidden');
-                }
-            });
-
-            // Edit Warehouse Modal
-            openEditWh.addEventListener('click', () => {
-                editWhOverlay.classList.remove('hidden');
-                hideNavbarOnModalOpen();
-            });
-
-            closeEditWh.addEventListener('click', () => {
-                editWhOverlay.classList.add('hidden');
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === editWhOverlay) {
-                    editWhOverlay.classList.add('hidden');
-                }
-            });
-
-            // Add Item Modal
-            openAdd.addEventListener('click', () => {
-                addOverlay.classList.remove('hidden');
-                hideNavbarOnModalOpen();
-            });
-
-            closeAdd.addEventListener('click', () => {
-                addOverlay.classList.add('hidden');
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === addOverlay) {
-                    addOverlay.classList.add('hidden');
-                }
-            });
-
-            // Add Category Modal
-            openAddc.addEventListener('click', () => {
-                addcOverlay.classList.remove('hidden');
-                hideNavbarOnModalOpen();
-            });
-
-            closeAddc.addEventListener('click', () => {
-                addcOverlay.classList.add('hidden');
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === addcOverlay) {
-                    addcOverlay.classList.add('hidden');
-                }
-            });
-
-            // Borrow Item Modal (Updated)
-            openBorrow.addEventListener('click', () => {
-                const itemName = openBorrow.dataset
-                .itemName; // Dynamically get the item name from the button
-                document.getElementById('borrow-item-name').value =
-                itemName; // Fill the item name in the form
-                borrowOverlay.classList.remove('hidden');
-                hideNavbarOnModalOpen();
-            });
-
-            closeBorrow.addEventListener('click', () => {
-                borrowOverlay.classList.add('hidden');
-            });
-
-            window.addEventListener('click', (e) => {
-                if (e.target === borrowOverlay) {
-                    borrowOverlay.classList.add('hidden');
-                }
+                setupModal(openButton ? [openButton] : null, closeButton, modalOverlay);
             });
         });
 
-        document.getElementById('search-bar').addEventListener('input', function () {
-        const query = this.value.toLowerCase();
-        const rows = document.querySelectorAll('#product-table tbody tr');
-        let visibleRows = 0;
 
-        rows.forEach(row => {
-            const rowText = row.innerText.toLowerCase();
-            if (rowText.includes(query)) {
-                row.style.display = '';
-                visibleRows++;
-            } else {
-                row.style.display = 'none';
-            }
+        // Script: Search Bar Filtering
+        document.getElementById("search-bar").addEventListener("input", function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll("#product-table tbody tr");
+            let visibleRows = 0;
+
+            rows.forEach(row => {
+                const rowText = row.innerText.toLowerCase();
+                if (rowText.includes(query)) {
+                    row.style.display = "";
+                    visibleRows++;
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            const noItemsMessage = document.getElementById("no-items-message");
+            noItemsMessage.classList.toggle("hidden", visibleRows !== 0);
         });
-
-        const noItemsMessage = document.getElementById('no-items-message');
-        if (visibleRows === 0) {
-            noItemsMessage.classList.remove('hidden');
-        } else {
-            noItemsMessage.classList.add('hidden');
-        }
-    });
-        // end script 
     </script>
 
 

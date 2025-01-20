@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Borrowmodel;
+use App\Models\productmodel;
 use Illuminate\Http\Request;
 
 class AdminUserController extends Controller
@@ -14,25 +16,40 @@ class AdminUserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    public function store(Request $request)
+    // Display the borrow index page
+    // Display the borrow index page
+    public function borrowIndex()
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,user',
-        ]);
-
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => $request->role,
-        ]);
-
-        return redirect()->route('admin.users.index')->with('success', 'User created successfully');
+        $borrows = Borrowmodel::all(); // Fetch all borrow transactions
+        return view('admin.borrow.index', compact('borrows'));
     }
 
+    // Handle the return action (delete the item from the list)
+    public function returnItem($id)
+    {
+        $borrow = Borrowmodel::findOrFail($id); // Find the borrow record by ID
+        $product = productmodel::where('product_name', $borrow->item_name)->first(); // Find the product by item name
+    
+        if (!$product) {
+            return redirect()->route('admin.borrow.index')->with('error', 'Product not found.');
+        }
+    
+        $product->product_qty += $borrow->qty; // Update the quantity of the product
+        $product->save(); // Save the changes
+    
+        $borrow->status = 'returned'; // Update the status to "returned"
+        $borrow->save(); // Save the changes
+    
+        return redirect()->route('admin.borrow.index')->with('success', 'Item status updated to returned.');
+    }
+
+    public function destroyBorrow($id)
+    {
+        $borrow = Borrowmodel::findOrFail($id); // Find the borrow record by ID
+        $borrow->delete(); // Delete the record
+
+        return redirect()->route('admin.borrow.index')->with('success', 'Borrow record deleted successfully.');
+    }
 
     // Edit user details
     public function edit($id)
@@ -52,7 +69,7 @@ class AdminUserController extends Controller
         ]);
 
         $user->update($request->only(['name', 'email', 'role']));
-        return redirect()->route('admin.users.index')->with('success', 'User updated successfully');
+        return redirect()->route('admin.users.index')->with('success', 'User  updated successfully');
     }
 
     // Delete a user
@@ -65,6 +82,6 @@ class AdminUserController extends Controller
         }
 
         $user->delete();
-        return redirect()->route('admin.users.index')->with('success', 'User deleted successfully');
+        return redirect()->route('admin.users.index')->with('success', 'User  deleted successfully');
     }
 }
