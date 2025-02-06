@@ -11,6 +11,29 @@
         .shadow-active {
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
+
+        @media print {
+            body {
+                visibility: hidden;
+            }
+
+            .printable-table,
+            .printable-table * {
+                visibility: visible;
+            }
+
+            .printable-table {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+
+            .print-date {
+                position: fixed;
+                bottom: 10px;
+                right: 10px;
+            }
+        }
     </style>
 </head>
 
@@ -18,8 +41,18 @@
     @include('navbar')
     <section id="sortir" class="md:p-24 sm:p-12 p-6">
         <h1 class="font-bold text-2xl md:mt-10 mt-16 mb-4">PRODUCTS FROM ALL WAREHOUSE(S)</h1>
-        <div class="justify-between sm:flex md:gap-6 sm:gap-1">
 
+        <!-- Delete Button for Admins -->
+        @if (Auth::user()->role === 'admin')
+            <form action="{{ route('products.deleteWithoutWarehouse') }}" method="POST" class="mb-4" id="delete-form">
+                @csrf
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+                    Delete All Items Without Warehouse
+                </button>
+            </form>
+        @endif
+
+        <div class="justify-between sm:flex md:gap-6 sm:gap-1">
             <!-- Available Stock Button -->
             <div class="sortir border-2 border-gray-300 rounded-lg lg:py-6 lg:px-10 md:py-4 md:px-8 sm:py-2 sm:px-4 py-1 px-2 my-2 flex sm:w-1/3 hover:shadow-lg"
                 data-category="available">
@@ -53,7 +86,10 @@
 
         <!-- Product List -->
         <section class="wrap-table mt-10 border border-gray-300 p-4 shadow-lg shadow-slate-400 rounded-xl">
-            <h1 class="md:text-3xl sm:text-2xl text-xl font-bold my-4">Product List</h1>
+            <div class="lg:flex lg:flex-row">
+                <h1 class="md:text-3xl sm:text-2xl text-xl font-bold my-4 mr-5">Product List</h1>
+                <button class="bg-blue-500 text-white px-3 rounded-md hover:bg-blue-600" onclick="printInvoice()">Print Invoice</button>
+            </div>
 
             <!-- Search Bar -->
             <div class="mb-4">
@@ -62,7 +98,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full border-collapse border border-gray-200 rounded-md overflow-hidden">
+                <table class="min-w-full border-collapse border border-gray-200 rounded-md overflow-hidden printable-table">
                     <thead>
                         <tr class="bg-Mid-blue text-gray-200 border-b border-gray-300">
                             <th class="px-4 py-3 text-center text-sm font-semibold border-r border-gray-300">#</th>
@@ -115,110 +151,133 @@
                 </table>
             </div>
         </section>
-
-
     </section>
 
     <script>
-        // Search bar functionality
-        document.getElementById('search-bar').addEventListener('input', function() {
-                    const query = this.value.toLowerCase();
-                    const rows = document.querySelectorAll('#product-table tr');
+        function printInvoice() {
+            const date = new Date();
+            const formattedDate = date.toLocaleString();
+            const dateElement = document.createElement('div');
+            dateElement.className = 'print-date';
+            dateElement.innerText = `Printed on: ${formattedDate}`;
+            document.body.appendChild(dateElement);
+            window.print();
+            document.body.removeChild(dateElement);
+        }
 
-                    if (query === "") {
-                        // If search bar is empty, show all rows and remove the "No Products / Items" message
-                        rows.forEach(row => {
+        // Confirmation for delete action
+        document.addEventListener('DOMContentLoaded', () => {
+            const deleteForm = document.getElementById('delete-form');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function(e) {
+                    const confirmation = confirm(
+                        "Are you sure you want to delete all items without a warehouse?");
+                    if (!confirmation) {
+                        e.preventDefault();
+                    }
+                });
+            }
+
+            // Search bar functionality
+            document.getElementById('search-bar').addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                const rows = document.querySelectorAll('#product-table tr');
+
+                if (query === "") {
+                    // If search bar is empty, show all rows and remove the "No Products / Items" message
+                    rows.forEach(row => {
+                        row.style.display = ""; // Show all rows
+                    });
+                    removeNoItemsMessage();
+                    return;
+                }
+
+                // Filter rows based on the search query
+                let visibleRows = 0;
+                rows.forEach(row => {
+                    const rowText = row.innerText.toLowerCase();
+                    if (rowText.includes(query)) {
+                        row.style.display = ""; // Show matching rows
+                        visibleRows++;
+                    } else {
+                        row.style.display = "none"; // Hide non-matching rows
+                    }
+                });
+
+                // Show "No Products / Items" message if no rows match
+                if (visibleRows === 0) {
+                    showNoItemsMessage();
+                } else {
+                    removeNoItemsMessage();
+                }
+            });
+
+            // Sorting functionality
+            document.querySelectorAll(".sortir").forEach(button => {
+                button.addEventListener("click", function() {
+                    const category = this.getAttribute("data-category");
+                    const isActive = this.classList.contains("active");
+
+                    // Remove 'active' class from all buttons
+                    document.querySelectorAll(".sortir").forEach(btn => btn.classList.remove(
+                        "active"));
+
+                    if (isActive) {
+                        // If already active, show all items and deactivate filter
+                        document.querySelectorAll("#product-table tr").forEach(row => {
                             row.style.display = ""; // Show all rows
                         });
-                        removeNoItemsMessage();
-                        return;
-                    }
-
-                    // Filter rows based on the search query
-                    let visibleRows = 0;
-                    rows.forEach(row => {
-                        const rowText = row.innerText.toLowerCase();
-                        if (rowText.includes(query)) {
-                            row.style.display = ""; // Show matching rows
-                            visibleRows++;
-                        } else {
-                            row.style.display = "none"; // Hide non-matching rows
-                        }
-                    });
-
-                    // Show "No Products / Items" message if no rows match
-                    if (visibleRows === 0) {
-                        showNoItemsMessage();
+                        removeNoItemsMessage(); // Remove "No Products / Items" message
                     } else {
-                        removeNoItemsMessage();
-                    }
-                });
+                        // Activate current button and filter rows
+                        this.classList.add("active");
+                        let visibleRows = 0;
 
-                // Sorting functionality
-                document.querySelectorAll(".sortir").forEach(button => {
-                    button.addEventListener("click", function() {
-                        const category = this.getAttribute("data-category");
-                        const isActive = this.classList.contains("active");
-
-                        // Remove 'active' class from all buttons
-                        document.querySelectorAll(".sortir").forEach(btn => btn.classList.remove("active"));
-
-                        if (isActive) {
-                            // If already active, show all items and deactivate filter
-                            document.querySelectorAll("#product-table tr").forEach(row => {
-                                row.style.display = ""; // Show all rows
-                            });
-                            removeNoItemsMessage(); // Remove "No Products / Items" message
-                        } else {
-                            // Activate current button and filter rows
-                            this.classList.add("active");
-                            let visibleRows = 0;
-
-                            document.querySelectorAll("#product-table tr").forEach(row => {
-                                if (row.getAttribute("data-stock") === category) {
-                                    row.style.display = ""; // Show matching rows
-                                    visibleRows++;
-                                } else {
-                                    row.style.display = "none"; // Hide non-matching rows
-                                }
-                            });
-
-                            // If no rows are visible, show "No Products / Items" message
-                            if (visibleRows === 0) {
-                                showNoItemsMessage();
+                        document.querySelectorAll("#product-table tr").forEach(row => {
+                            if (row.getAttribute("data-stock") === category) {
+                                row.style.display = ""; // Show matching rows
+                                visibleRows++;
                             } else {
-                                removeNoItemsMessage();
+                                row.style.display = "none"; // Hide non-matching rows
                             }
+                        });
+
+                        // If no rows are visible, show "No Products / Items" message
+                        if (visibleRows === 0) {
+                            showNoItemsMessage();
+                        } else {
+                            removeNoItemsMessage();
                         }
-                    });
+                    }
                 });
+            });
 
-                // Show "No Products / Items" message
-                function showNoItemsMessage() {
-                    const tableBody = document.getElementById("product-table");
-                    let noItemsMessage = document.getElementById("no-items-message");
+            // Show "No Products / Items" message
+            function showNoItemsMessage() {
+                const tableBody = document.getElementById("product-table");
+                let noItemsMessage = document.getElementById("no-items-message");
 
-                    if (!noItemsMessage) {
-                        const noItemsRow = document.createElement("tr");
-                        noItemsRow.id = "no-items-message";
-                        noItemsRow.innerHTML = `
-                    <td colspan="6" class="text-center py-4 text-gray-500 font-bold">
-                        No Products / Items
-                    </td>
-                `;
-                        tableBody.appendChild(noItemsRow);
-                    }
+                if (!noItemsMessage) {
+                    const noItemsRow = document.createElement("tr");
+                    noItemsRow.id = "no-items-message";
+                    noItemsRow.innerHTML = `
+                        <td colspan="6" class="text-center py-4 text-gray-500 font-bold">
+                            No Products / Items
+                        </td>
+                    `;
+                    tableBody.appendChild(noItemsRow);
                 }
+            }
 
-                // Remove "No Products / Items" message
-                function removeNoItemsMessage() {
-                    const noItemsMessage = document.getElementById("no-items-message");
-                    if (noItemsMessage) {
-                        noItemsMessage.remove();
-                    }
+            // Remove "No Products / Items" message
+            function removeNoItemsMessage() {
+                const noItemsMessage = document.getElementById("no-items-message");
+                if (noItemsMessage) {
+                    noItemsMessage.remove();
                 }
+            }
+        });
     </script>
-
 
 </body>
 

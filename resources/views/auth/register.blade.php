@@ -32,7 +32,7 @@
         <!-- Register Form -->
         <form method="POST" action="{{ route('registeradminonly') }}">
             @csrf
-            <div class="space-y-4">
+            <div class="space-y-4 my-10">
                 <!-- Name Input -->
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
@@ -101,13 +101,6 @@
                 </button>
             </div>
         </form>
-
-        <!-- Already Registered Link -->
-        <div class="mt-6 text-center">
-            <a href="{{ route('login') }}" class="text-sm text-gray-600 hover:text-blue-600">
-                Already have an account? Login
-            </a>
-        </div>
     </div>
 </body>
 

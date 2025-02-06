@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navbar</title>
+    <title>Warehouse | Inside</title>
     @vite('resources/css/app.css')
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
         integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
@@ -257,7 +257,7 @@
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- Manufacturer -->
-                            <input type="text" id="manufacturer" name="manufacturer" placeholder="Manufacturer"
+                            <input type="text" id="manufaktur" name="manufaktur" placeholder="Manufacturer"
                                 class="mt-1 p-2 border-under w-full text-black" required>
 
                             <!-- Last_Inspection -->
@@ -354,9 +354,9 @@
 
         <!-- Modal Structure -->
         <section class="wrap-table mt-20 border border-gray-300 shadow-md rounded-lg">
-            <h1 class="text-2xl font-bold text-gray-800 mb-2 ml-3 mt-3">{{ $warehouse->warehouse_name }}</h1>
+            <h1 class="text-2xl font-bold text-gray-800 ml-3 mt-3">{{ $warehouse->warehouse_name }}</h1>
             <div class="overflow-x-auto">
-                <div class="mb-4 mx-3">
+                <div class="my-3 mx-3">
                     <input type="text" id="search-bar" placeholder="Search..."
                         class="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-300">
                 </div>
@@ -365,13 +365,14 @@
                     <!-- Table Header -->
                     <thead>
                         <tr class="bg-gray-100 border-b border-gray-300 text-gray-700">
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">#</th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200 cursor-context-menu hover:bg-gray-200"
+                                onclick="sortTable('number')">#</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Product Name
                             </th>
                             <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Category
                             </th>
-                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Quantity
-                            </th>
+                            <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200 cursor-context-menu hover:bg-gray-200"
+                                onclick="sortTable('quantity')">Quantity</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Serial</th>
                             <th class="px-4 py-3 text-left text-sm font-semibold border-r border-gray-200">Manufacturer
                             </th>
@@ -400,8 +401,11 @@
                                     {{ $product->manufaktur }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
                                     {{ $product->last_inspection }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200">
-                                    {{ $product->next_inspection }}</td>
+                                <td
+                                    class="px-4 py-3 text-sm text-gray-700 border-r border-gray-200 
+                                    @if (now()->diffInDays($product->next_inspection) <= 7) bg-yellow-300 @endif">
+                                    {{ $product->next_inspection }}
+                                </td>
                                 <td class="px-4 py-3 text-sm text-gray-700 flex space-x-2">
                                     <button
                                         class="open-edit bg-green-500 text-white px-2 py-1 rounded text-xs hover:bg-green-600"
@@ -440,6 +444,32 @@
 
 
     <script>
+    function sortTable(column) {
+        const table = document.getElementById("product-table");
+        const rows = Array.from(table.rows).slice(1); // Exclude header row
+        const isAscending = table.dataset.sortOrder === "asc";
+
+        rows.sort((a, b) => {
+            let valueA, valueB;
+            if (column === 'quantity') {
+                valueA = parseInt(a.cells[3].innerText); // Quantity column index
+                valueB = parseInt(b.cells[3].innerText);
+            } else if (column === 'number') {
+                valueA = parseInt(a.cells[0].innerText); // Number column index
+                valueB = parseInt(b.cells[0].innerText);
+            }
+            return isAscending ? valueA - valueB : valueB - valueA;
+        });
+
+        // Toggle sort order
+        table.dataset.sortOrder = isAscending ? "desc" : "asc";
+
+        // Append sorted rows to the table body
+        const tbody = table.tBodies[0];
+        tbody.innerHTML = "";
+        rows.forEach(row => tbody.appendChild(row));
+    }
+
         // Script: Navbar
         document.addEventListener("DOMContentLoaded", function() {
             const toggleButton = document.querySelector("[data-collapse-toggle]");

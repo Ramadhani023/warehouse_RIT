@@ -13,7 +13,11 @@ class productmodel extends Model
         'product_category',
         'product_qty',
         'warehouse_id',
-        'category_id'
+        'category_id',
+        'serial',
+        'manufaktur',
+        'last_inspection',
+        'next_inspection',
         
     ];
 

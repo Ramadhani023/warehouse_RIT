@@ -50,6 +50,14 @@ class productcontroller extends Controller
             'outOfStockCount'
         ));
     }
+
+    public function deleteWithoutWarehouse(Request $request)
+    {
+    // Delete all products without a warehouse
+    productmodel::whereNull('warehouse_id')->delete();
+
+    return redirect()->back()->with('success', 'All items without a warehouse have been deleted.');
+    }
     
     // Add a new product
     public function add(Request $request)

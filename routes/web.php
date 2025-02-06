@@ -79,6 +79,9 @@ Route::post('warehouse/addc', [categorycontroller::class, 'add'])->name('warehou
 // Show category data
 Route::get('warehouse/showCategory', [categorycontroller::class, 'showcategoryForm'])->name('warehouse.showc');
 
+// Route for deleting products without a warehouse
+Route::post('/products/deleteWithoutWarehouse', [productcontroller::class, 'deleteWithoutWarehouse'])->name('products.deleteWithoutWarehouse');
+
 //Show product data
 Route::get('/warehouse/{id}/products', [productcontroller::class, 'showproductForm'])->name('warehouse.showi');
 

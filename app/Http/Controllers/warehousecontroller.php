@@ -26,25 +26,6 @@ class warehousecontroller extends Controller
         return redirect()->route('warehouse.main');
     }
 
-    public function showWarehouse($warehouseId, Request $request)
-    {
-        $warehouse = warehousemodel::findOrFail($warehouseId);
-        $category = categorymodel::all(); // Ensure this fetches all category
-        $search = $request->input('search');
-        
-        $products = productmodel::where('warehouse_id', $warehouseId)
-            ->when($search, function ($query, $search) {
-                $query->where('product_name', 'LIKE', "%{$search}%")
-                      ->orWhere('serial', 'LIKE', "%{$search}%")
-                      ->orWhereHas('category', function ($query) use ($search) {
-                          $query->where('category_name', 'LIKE', "%{$search}%");
-                      });
-            })
-            ->get();
-    
-        return view('warehouse.inside', compact('warehouse', 'products', 'category'));
-    }
-
     public function show($id)
 {
     $category = categorymodel::all(); // Fetch all categoryzzz
@@ -71,6 +52,10 @@ function update(Request $request, $id) {
 
 function delete($id){
     $warehouse = warehousemodel::find($id);
+    
+    // Set warehouse_id of associated products to null
+    productmodel::where('warehouse_id', $id)->update(['warehouse_id' => null]);
+    
     $warehouse->delete();
     return redirect()->route('warehouse.main');
 }
