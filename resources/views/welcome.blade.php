@@ -49,19 +49,19 @@
 
         <!-- User Management Card (Visible only for Admin) -->
         @if (Auth::user()->role === 'admin')
-        <a href="/admin/users" class="flex flex-col items-center justify-center w-60 h-28 bg-[#cabd2d] rounded-lg text-white shadow-lg hover:shadow-xl transition-shadow">
+        <a href="{{ route('admin.borrow.index') }}" class="flex flex-col items-center justify-center w-60 h-28 bg-[#cabd2d] rounded-lg text-white shadow-lg hover:shadow-xl transition-shadow">
             <div class="flex items-center justify-center w-16 h-16 bg-transparent bg-opacity-20 rounded-full">
                 <img src="{{ asset('img/userman.png') }}" alt="User  Management Icon" class="ml-3">
             </div>
-            <p class="mt-2 text-lg font-medium">USER MANAGER</p>
+            <p class="mt-2 text-lg font-medium">BORROW LIST</p>
         </a>
 
         <!-- Borrow List Card (Visible only for Admin) -->
-        <a href="{{ route('admin.borrow.index') }}" class="flex flex-col items-center justify-center w-60 h-28 bg-[#2dcab0] rounded-lg text-white shadow-lg hover:shadow-xl transition-shadow">
+        <a href="/admin/users" class="flex flex-col items-center justify-center w-60 h-28 bg-[#2dcab0] rounded-lg text-white shadow-lg hover:shadow-xl transition-shadow">
             <div class="flex items-center justify-center w-16 h-16 bg-transparent bg-opacity-20 rounded-full">
                 <img src="{{ asset('img/borrow-list.png') }}" alt="Borrow List Icon" class="ml-3">
             </div>
-            <p class="mt-2 text-lg font-medium">BORROW LIST</p>
+            <p class="mt-2 text-lg font-medium">USER MANAGER</p>
         </a>
         @endif
     </div>
